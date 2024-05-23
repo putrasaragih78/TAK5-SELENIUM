@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from pageObject.loginPage import login,loginData
 
 class KasirTest(unittest.TestCase):
 
@@ -11,16 +12,24 @@ class KasirTest(unittest.TestCase):
         self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
       
 
-    def test_login(self):
-        browser = self.driver 
-        browser.get('https://kasirdemo.belajarqa.com/')
-        self.assertIn('kasirAja', browser.title)
-        browser.find_element(By.ID, 'email').send_keys('saragih78putra@gmail.co')
-        browser.find_element(By.ID, 'password').send_keys('1234@')
-        browser.find_element(By.CSS_SELECTOR, '.chakra-button.css-1n8i4of').click()
-        self.assertEqual(browser.current_url, 'https://kasirdemo.belajarqa.com/login')
+    def test_a_login_success(self):
+        browser = self.driver
+        browser.get(loginData.url)
+        self.assertIn(loginData.title, browser.title)
+        browser.find_element(By.ID, login.email).send_keys(loginData.email)
+        browser.find_element(By.ID, login.passw).send_keys(loginData.passw)
+        browser.find_element(By.CSS_SELECTOR, login.login_btn).click()
+        self.assertEqual(browser.current_url, login.login_url)
 
-   
+    def test_b_login_failed(self):
+        browser = self.driver
+        browser.get(loginData.url)
+        self.assertIn(loginData.title, browser.title)
+        browser.find_element(By.ID, login.email).send_keys(loginData.email_invalid)
+        browser.find_element(By.ID, login.passw).send_keys(loginData.passw)
+        error_msg = browser.find_element(By.CSS_SELECTOR, '[role="alert"]').text
+        self.assertIn('must be a valid email', error_msg)
+      
 
 if __name__ == '__main__':
     unittest.main()
